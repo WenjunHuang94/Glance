@@ -20,10 +20,7 @@ Official PyTorch implementation of the paper:
 
 ## 🔥News
 
-- [Nov 7, 2025] [ComfyUI-piFlow](https://github.com/Lakonik/ComfyUI-piFlow) is now available! Supports 4-step sampling of Qwen-Image and Flux.1 dev using 8-bit models on a single consumer-grade GPU, powered by [ComfyUI](https://github.com/comfyanonymous/ComfyUI).
-
-**02.09.2025**
-- ✅ Added full training for Qwen-Image and Qwen-Image-Edit
+- [Dec 1, 2025] Glance has been officially released! You can now experiment with our 1-sample distilled model.
 
 ## 📦 Installation
 
