@@ -14,7 +14,7 @@ Official PyTorch implementation of the paper:
 [Alex Jinpeng Wang]()<sup>3</sup><br>
 <sup>1</sup>WuHan University, <sup>2</sup>National University of Singapore, <sup>3</sup>Central South University, <sup>4</sup>University of Electronic Science and Technology of China, <sup>5</sup>Microsoft
 <br>
-[ArXiv](https://arxiv.org/abs/2510.14974) | [Homepage](https://zhuobaidong.github.io/Glance/) | [Model🤗](https://huggingface.co/spaces/Lakonik/pi-Qwen)
+[ArXiv](https://arxiv.org/abs/2510.14974) | [Homepage](https://zhuobaidong.github.io/Glance/) | [Model🤗](https://huggingface.co/CSU-JPG/Glance)
 
 <img src="assets/teaser.png" alt=""/>
 
@@ -46,14 +46,10 @@ Official PyTorch implementation of the paper:
 4. Download pre-trained LoRA weights (optional):
    ```bash
    # Qwen Slow-LoRA weights
-   git clone https://huggingface.co/flymy-ai/qwen-image-realism-lora
+   wget https://huggingface.co/CSU-JPG/Glance/blob/main/glance_qwen_slow.safetensors
    
    # Qwen Fast-LoRA weights
-   git clone https://huggingface.co/flymy-ai/flux-dev-anne-hathaway-lora
-   
-   # Or download specific files
-   wget https://huggingface.co/flymy-ai/qwen-image-realism-lora/resolve/main/flymy_realism.safetensors
-   wget https://huggingface.co/flymy-ai/flux-dev-anne-hathaway-lora/resolve/main/pytorch_lora_weights.safetensors
+   wget https://huggingface.co/CSU-JPG/Glance/blob/main/glance_qwen_fast.safetensors
    ```
 
 ---
@@ -92,23 +88,6 @@ dataset/
 1. **Images**: Support common formats (PNG, JPG, JPEG, WEBP)
 2. **Text files**: Plain text files containing image descriptions
 3. **File naming**: Each image must have a corresponding text file with the same base name
-
-### Text File Content Examples
-
-**For FLUX character training (portrait_001.txt):**
-```
-ohwx woman, professional headshot, studio lighting, elegant pose, looking at camera
-```
-
-**For Qwen landscape training (landscape_042.txt):**
-```
-Mountain landscape at sunset, dramatic clouds, golden hour lighting, wide angle view
-```
-
-**For FLUX portrait training (abstract_design.txt):**
-```
-ohwx woman, modern portrait style, soft lighting, artistic composition
-```
 
 ### Data Preparation Tips
 
