@@ -58,30 +58,25 @@ Official PyTorch implementation of the paper:
 
 ### Dataset Structure for Qwen-Image and FLUX Training
 
-The training data should follow the same format for both Qwen and FLUX models, where each image has a corresponding text file with the same name:
+In our setting, the training data consist of a single image–text pair, which still follows the required format where the image and its text description share the same filename.
 
 ```
-dataset/
+data/
 ├── img1.png
 ├── img1.txt
 ```
 
 ### Dataset Structure for Qwen-Image-Edit Training
 
-For control-based image editing, the dataset should be organized with separate directories for target images/captions and control images:
+For control-based image editing, the data should be organized with separate directories for target image/caption and control image:
 
 ```
-dataset/
-├── images/           # Target images and their captions
+data/
+├── image/           # Target image and their caption
 │   ├── image_001.jpg
 │   ├── image_001.txt
-│   ├── image_002.jpg
-│   ├── image_002.txt
-│   └── ...
-└── control/          # Control images
+└── control/          # Control image
     ├── image_001.jpg
-    ├── image_002.jpg
-    └── ...
 ```
 ### Data Format Requirements
 
