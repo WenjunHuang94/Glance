@@ -104,7 +104,7 @@ We provide solid 4-GPU inference code for easy multi-card sampling. You can expe
 CUDA_VISIBLE_DEVICES=0,1,2,3 python infer_Glance_qwen.py
 ```
 
-### [Glance (Qwen-Image)]
+### Glance (Qwen-Image)
 ```python
 import torch
 from pipeline.qwen import GlanceQwenSlowPipeline, GlanceQwenFastPipeline
@@ -150,24 +150,30 @@ image.save("output.png")
 
 ![Sample Output](./assets/qwen.png)
 
-## 🏁 Start Training on < 24gb vram
-
-To begin training with your configuration file (e.g., `train_lora_4090.yaml`), run:
-
-```bash
-accelerate launch train_4090.py --config ./train_configs/train_lora_4090.yaml
-```
-![Sample Output](./assets/Valentin_24gb.jpg)
-
-
 ## 🚀 Training
 
-### Qwen-Image LoRA Training
+### Glance_Qwen Training
 
-To begin training with your configuration file, run:
+To start training with your configuration file, simply run:
 
 ```bash
-accelerate launch train.py --config ./train_configs/train_lora.yaml
+accelerate launch train_Glance_qwen.py --config ./train_configs/Glance_qwen.yaml
 ```
 
-Make sure `train_lora.yaml` is correctly set up with paths to your dataset, model, output directory, and other parameters.
+Ensure that `Glance_qwen.yaml` is properly configured with your dataset paths, model settings, output directory, and other hyperparameters.
+
+If you want to train on a **single GPU** (requires **less than 24 GB** of VRAM), run:
+
+```bash
+python train_Glance_qwen.py --config ./train_configs/Glance_qwen.yaml
+```
+
+> Note: **This training code is primarily based on [flymyai-lora-trainer](https://github.com/FlyMyAI/flymyai-lora-trainer).
+
+### Glance_FLUX Training
+
+To launch training for the FLUX variant, run:
+
+```bash
+accelerate launch train_Glance_flux.py --config ./train_configs/Glance_flux.yaml
+```
