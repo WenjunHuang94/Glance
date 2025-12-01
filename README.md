@@ -132,29 +132,43 @@ We provide pipelines for easy inference. The following code demonstrates how to 
 Note: GM-Qwen supports elastic inference. Feel free to set `num_inference_steps` to any value above 4.
 ```python
 import torch
-from diffusers import FlowMatchEulerDiscreteScheduler
-from lakonlab.pipelines.piqwen_pipeline import PiQwenImagePipeline
+from pipeline.qwen import GlanceQwenSlowPipeline, GlanceQwenFastPipeline
+from utils.distribute_free import distribute, free_pipe
 
-pipe = PiQwenImagePipeline.from_pretrained(
-    'Qwen/Qwen-Image',
-    torch_dtype=torch.bfloat16)
-adapter_name = pipe.load_piflow_adapter(  # you may later call `pipe.set_adapters([adapter_name, ...])` to combine other adapters (e.g., style LoRAs)
-    'Lakonik/pi-Qwen-Image',
-    subfolder='gmqwen_k8_piid_4step',
-    target_module_name='transformer')
-pipe.scheduler = FlowMatchEulerDiscreteScheduler.from_config(  # use fixed shift=3.2
-    pipe.scheduler.config, shift=3.2, shift_terminal=None, use_dynamic_shifting=False)
-pipe = pipe.to('cuda')
+repo = "CSU-JPG/Glance"
+slow_pipe = GlanceQwenSlowPipeline.from_pretrained("Qwen/Qwen-Image", torch_dtype=torch.float32)
+slow_pipe.load_lora_weights(repo, weight_name="glance_qwen_slow.safetensors")
+distribute(slow_pipe)
 
-out = pipe(
-    prompt='Photo of a coffee shop entrance featuring a chalkboard sign reading "π-Qwen Coffee 😊 $2 per cup," with a neon '
-           'light beside it displaying "π-通义千问". Next to it hangs a poster showing a beautiful Chinese woman, '
-           'and beneath the poster is written "e≈2.71828-18284-59045-23536-02874-71352".',
-    width=1920,
-    height=1080,
-    num_inference_steps=4,
-    generator=torch.Generator().manual_seed(42),
+prompt = "Please create a photograph capturing a young woman showcasing a dynamic presence as she bicycles alongside a river during a hot summer day. Her long hair streams behind her as she pedals, dressed in snug tights and a vibrant yellow tank top, complemented by New Balance running shoes that highlight her lean, athletic build. She sports a small backpack and sunglasses resting confidently atop her head."
+latents = slow_pipe(
+    prompt=prompt,
+    negative_prompt=" ",
+    width=1024,
+    height=1024,
+    num_inference_steps=5,
+    true_cfg_scale=5,
+    generator=torch.Generator(device="cuda").manual_seed(0), 
+    output_type="latent"
 ).images[0]
-out.save('gmqwen_4nfe.png')
+cached_latents = latents.unsqueeze(0).detach().cpu()
+free_pipe(slow_pipe)
+
+fast_pipe = GlanceQwenFastPipeline.from_pretrained("Qwen/Qwen-Image", torch_dtype=torch.float32)
+fast_pipe.load_lora_weights(repo, weight_name="glance_qwen_fast.safetensors")
+distribute(fast_pipe)
+
+loaded_latents = cached_latents.to("cuda:0", dtype=fast_pipe.transformer.dtype)
+image = fast_pipe(
+    prompt=prompt,
+    negative_prompt=" ", 
+    width=1024,
+    height=1024,
+    num_inference_steps=5, 
+    true_cfg_scale=5,
+    generator=torch.Generator(device="cuda").manual_seed(0), 
+    latents=loaded_latents 
+).images[0]
+image.save("output.png")
 ```
 <img src="assets/gmqwen_4nfe.png" width="600" alt=""/>
