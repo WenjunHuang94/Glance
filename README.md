@@ -162,7 +162,7 @@ accelerate launch train_Glance_qwen.py --config ./train_configs/Glance_qwen.yaml
 
 > Note: All the training code is primarily based on [flymyai-lora-trainer](https://github.com/FlyMyAI/flymyai-lora-trainer).
 
-Ensure that `Glance_qwen.yaml` is properly configured with your dataset paths, model settings, output directory, and other hyperparameters.
+Ensure that `Glance_qwen.yaml` is properly configured with your dataset paths, model settings, output directory, and other hyperparameters. You can also explicitly specify whether to train the **Slow-LoRA** or **Fast-LoRA** variant directly within the configuration file.
 
 If you want to train on a **single GPU** (requires **less than 24 GB** of VRAM), run:
 
