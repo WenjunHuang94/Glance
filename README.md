@@ -5,13 +5,13 @@ Official PyTorch implementation of the paper:
 **Glance: Accelerating Diffusion Models with 1 Sample**
 <br>
 [Zhuobai Dong](https://zhuobaidong.github.io/)<sup>1</sup>, 
-[Rui Zhao]()<sup>2</sup>,
-[Songjie Wu]()<sup>3</sup>,
-[Junchao Yi]()<sup>4</sup>,
-[Linjie Li]()<sup>5</sup>, 
-[Zhengyuan Yang]()<sup>5</sup>, 
-[Lijuan Wang]()<sup>5</sup>, 
-[Alex Jinpeng Wang]()<sup>3</sup><br>
+[Rui Zhao](https://ruizhaocv.github.io/)<sup>2</sup>,
+[Songjie Wu](https://songjiewu1.github.io/)<sup>3</sup>,
+[Junchao Yi](https://github.com/Junc1i)<sup>4</sup>,
+[Linjie Li](https://scholar.google.com/citations?user=WR875gYAAAAJ&hl=en)<sup>5</sup>, 
+[Zhengyuan Yang](https://zyang-ur.github.io/)<sup>5</sup>, 
+[Lijuan Wang](https://www.microsoft.com/en-us/research/people/lijuanw/)<sup>5</sup>, 
+[Alex Jinpeng Wang](https://fingerrec.github.io/)<sup>3</sup><br>
 <sup>1</sup>WuHan University, <sup>2</sup>National University of Singapore, <sup>3</sup>Central South University, <sup>4</sup>University of Electronic Science and Technology of China, <sup>5</sup>Microsoft
 <br>
 [ArXiv](https://arxiv.org/abs/2512.02899) | [Homepage](https://zhuobaidong.github.io/Glance/) | [Model🤗](https://huggingface.co/CSU-JPG/Glance)
