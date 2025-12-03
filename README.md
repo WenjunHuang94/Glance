@@ -176,3 +176,17 @@ To launch training for the FLUX variant, run:
 ```bash
 accelerate launch train_Glance_flux.py --config ./train_configs/Glance_flux.yaml
 ```
+
+## Citation
+```
+@misc{dong2025glanceacceleratingdiffusionmodels,
+      title={Glance: Accelerating Diffusion Models with 1 Sample}, 
+      author={Zhuobai Dong and Rui Zhao and Songjie Wu and Junchao Yi and Linjie Li and Zhengyuan Yang and Lijuan Wang and Alex Jinpeng Wang},
+      year={2025},
+      eprint={2512.02899},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2512.02899}, 
+}
+
+```
