@@ -177,6 +177,7 @@ To launch training for the FLUX variant, run:
 accelerate launch train_Glance_flux.py --config ./train_configs/Glance_flux.yaml
 ```
 
+
 ## Citation
 ```
 @misc{dong2025glanceacceleratingdiffusionmodels,
@@ -188,5 +189,11 @@ accelerate launch train_Glance_flux.py --config ./train_configs/Glance_flux.yaml
       primaryClass={cs.CV},
       url={https://arxiv.org/abs/2512.02899}, 
 }
-
 ```
+
+## Star History
+
+If you find this project helpful or interesting, a star ⭐ would be greatly appreciated!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=CSU-JPG/Glance&type=date&legend=top-left)](https://www.star-history.com/#CSU-JPG/Glance&type=date&legend=top-left)
+
