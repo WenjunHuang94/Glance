@@ -98,22 +98,22 @@ python utils/validate_dataset.py --path path/to/your/dataset
 ---
 ## 🎨 Inference
 
-We provide solid 4-GPU inference code for easy multi-card sampling. You can experience our Glance model by running:
+You can experience our Glance model by running:
 
 ```bash
-CUDA_VISIBLE_DEVICES=0,1,2,3 python infer_Glance_qwen.py
+python infer_Glance_qwen.py
 ```
 
 ### Glance (Qwen-Image)
 ```python
 import torch
 from pipeline.qwen import GlanceQwenSlowPipeline, GlanceQwenFastPipeline
-from utils.distribute_free import distribute, free_pipe
+from utils.distribute_free import free_pipe
 
 repo = "CSU-JPG/Glance"
 slow_pipe = GlanceQwenSlowPipeline.from_pretrained("Qwen/Qwen-Image", torch_dtype=torch.float32)
 slow_pipe.load_lora_weights(repo, weight_name="glance_qwen_slow.safetensors")
-distribute(slow_pipe)
+slow_pipe.to("cuda")
 
 prompt = "Please create a photograph capturing a young woman showcasing a dynamic presence as she bicycles alongside a river during a hot summer day. Her long hair streams behind her as she pedals, dressed in snug tights and a vibrant yellow tank top, complemented by New Balance running shoes that highlight her lean, athletic build. She sports a small backpack and sunglasses resting confidently atop her head."
 latents = slow_pipe(
@@ -130,7 +130,7 @@ free_pipe(slow_pipe)
 
 fast_pipe = GlanceQwenFastPipeline.from_pretrained("Qwen/Qwen-Image", torch_dtype=torch.float32)
 fast_pipe.load_lora_weights(repo, weight_name="glance_qwen_fast.safetensors")
-distribute(fast_pipe)
+fast_pipe.to("cuda")
 
 image = fast_pipe(
     prompt=prompt,
@@ -144,6 +144,13 @@ image = fast_pipe(
 ).images[0]
 image.save("output.png")
 ```
+
+We also provide solid 4-GPU inference code for easy multi-card sampling:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 python infer_Glance_qwen_multi_GPU.py
+```
+
 ### 🖼️ Sample Output - Glance-Qwen-Image
 
 ![Sample Output](./assets/qwen.png)
