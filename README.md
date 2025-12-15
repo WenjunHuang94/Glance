@@ -146,7 +146,7 @@ image = fast_pipe(
 image.save("output.png")
 ```
 
-We also provide solid 4-GPU inference code for easy multi-card sampling:
+We also provide solid 4-GPU inference code for easy multi-card sampling if your GPU memory less than 32GB VRAM:
 
 ```bash
 CUDA_VISIBLE_DEVICES=0,1,2,3 python infer_Glance_qwen_multi_GPU.py
