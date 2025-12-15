@@ -1,5 +1,5 @@
 import torch
-from pipeline.qwen import GlanceQwenSlowPipeline, GlanceQwenFastPipeline
+from pipeline.qwen_multi_GPU import GlanceQwenSlowPipeline, GlanceQwenFastPipeline
 from utils.distribute_free import distribute, free_pipe
 
 repo = "CSU-JPG/Glance"
