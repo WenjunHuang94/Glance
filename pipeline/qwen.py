@@ -96,7 +96,7 @@ class GlanceQwenSlowPipeline(QwenImagePipeline):
 
         # 3. Prepare timesteps and latents (No changes)
         num_channels_latents = self.transformer.config.in_channels // 4
-        prepared_latents = self.prepare_latents(
+        prepared_latents = self.prepare_latents(  # TODO：在SLOW的时候需要，到fast的时候，已经不需要了
             batch_size * num_images_per_prompt, num_channels_latents, height, width, prompt_embeds.dtype,
             device, generator, latents,
         )
@@ -116,7 +116,7 @@ class GlanceQwenSlowPipeline(QwenImagePipeline):
         timesteps, num_inference_steps = retrieve_timesteps(
             self.scheduler, num_inference_steps, device, sigmas=sigmas, mu=mu,
         )
-        timesteps = torch.tensor([
+        timesteps = torch.tensor([  # TODO： 硬编码5步
            1000.0000, 979.1915, 957.5157, 934.9171, 911.3354
            ], dtype=torch.bfloat16)
         timesteps = timesteps.to(device)
@@ -166,7 +166,8 @@ class GlanceQwenSlowPipeline(QwenImagePipeline):
 
                     for block_idx, block in enumerate(self.transformer.transformer_blocks):
                         # Use robust calculation for target GPU
-                        target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
+                        target_gpu_idx = 0
+                        # target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
                         
                         if target_gpu_idx != current_gpu_idx:
                             # [KEY FIX] Use synchronous transfer (default non_blocking=False)
@@ -209,7 +210,8 @@ class GlanceQwenSlowPipeline(QwenImagePipeline):
                         )
 
                         for block_idx, block in enumerate(self.transformer.transformer_blocks):
-                            target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
+                            target_gpu_idx = 0
+                            # target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
                             if target_gpu_idx != current_gpu_idx:
                                 # [KEY FIX] Use synchronous transfer
                                 hidden_states = hidden_states.to(f"cuda:{target_gpu_idx}")
@@ -388,13 +390,13 @@ class GlanceQwenFastPipeline(QwenImagePipeline):
                 # --- Positive Prompt Pass ---
                 with self.transformer.cache_context("cond"):
                     current_gpu_idx = 0
-                    hidden_states = self.transformer.img_in(latents).to(f"cuda:{current_gpu_idx}")
+                    hidden_states = self.transformer.img_in(latents).to(f"cuda:{current_gpu_idx}")  # TODO: 这里开始的逻辑，是从QwenImagePipeline的__call__里照搬的
                     encoder_hidden_states = self.transformer.txt_norm(prompt_embeds).to(f"cuda:{current_gpu_idx}")
                     encoder_hidden_states = self.transformer.txt_in(encoder_hidden_states)
                     encoder_hidden_states_mask = prompt_embeds_mask.to(f"cuda:{current_gpu_idx}")
                     
                     timestep_float = timestep.to(f"cuda:{current_gpu_idx}") / 1000
-                    temb = (
+                    temb = (  # 时间步嵌入
                         self.transformer.time_text_embed(timestep_float, hidden_states)
                         if guidance is None
                         else self.transformer.time_text_embed(timestep_float, guidance.to(f"cuda:{current_gpu_idx}"), hidden_states)
@@ -403,9 +405,10 @@ class GlanceQwenFastPipeline(QwenImagePipeline):
                         img_shapes, prompt_embeds_mask.sum(dim=1).tolist(), device=f"cuda:{current_gpu_idx}"
                     )
 
-                    for block_idx, block in enumerate(self.transformer.transformer_blocks):
+                    for block_idx, block in enumerate(self.transformer.transformer_blocks):  # TODO（1）用了多卡的形式来推理，在推理时调用。（2）但在实际训练时，不会用SLOW和Fast来训练，所以训练时Accelerator是能用的
                         # Use robust calculation for target GPU
-                        target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
+                        target_gpu_idx = 0
+                        # target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
                         
                         if target_gpu_idx != current_gpu_idx:
                             # [KEY FIX] Use synchronous transfer (default non_blocking=False)
@@ -416,7 +419,7 @@ class GlanceQwenFastPipeline(QwenImagePipeline):
                             image_rotary_emb = tuple(item.to(f"cuda:{target_gpu_idx}") for item in image_rotary_emb)
                             current_gpu_idx = target_gpu_idx
 
-                        encoder_hidden_states, hidden_states = block(
+                        encoder_hidden_states, hidden_states = block(  # TODO：这里因为是调了transformer_blocks, 对应QwenImageTransformerBlock的forward
                             hidden_states=hidden_states, encoder_hidden_states=encoder_hidden_states,
                             encoder_hidden_states_mask=encoder_hidden_states_mask, temb=temb,
                             image_rotary_emb=image_rotary_emb, joint_attention_kwargs=self.attention_kwargs,
@@ -426,7 +429,7 @@ class GlanceQwenFastPipeline(QwenImagePipeline):
                     temb = temb.to("cuda:0")
                     
                     hidden_states = self.transformer.norm_out(hidden_states, temb)
-                    noise_pred = self.transformer.proj_out(hidden_states)
+                    noise_pred = self.transformer.proj_out(hidden_states)  # TODO：将QwenImagePipeline的__call__的结果返回
 
                 # --- Negative Prompt Pass ---
                 if do_true_cfg:
@@ -448,7 +451,8 @@ class GlanceQwenFastPipeline(QwenImagePipeline):
                         )
 
                         for block_idx, block in enumerate(self.transformer.transformer_blocks):
-                            target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
+                            target_gpu_idx = 0
+                            # target_gpu_idx = min(block_idx // blocks_per_gpu + 1, num_worker_gpus)
                             if target_gpu_idx != current_gpu_idx:
                                 # [KEY FIX] Use synchronous transfer
                                 hidden_states = hidden_states.to(f"cuda:{target_gpu_idx}")

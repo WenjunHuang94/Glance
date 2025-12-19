@@ -234,15 +234,25 @@ def main():
     if args.quantize:
         torch_dtype = weight_dtype
         device = accelerator.device
+        logger.info("开始FP8量化，这可能需要一些时间...")
         all_blocks = list(qwen_transformer.transformer_blocks)
-        for block in tqdm(all_blocks):
-            block.to(device, dtype=torch_dtype)
-            quantize(block, weights=qfloat8)
-            freeze(block)
-            block.to('cpu')
-        qwen_transformer.to(device, dtype=torch_dtype)
-        quantize(qwen_transformer, weights=qfloat8)
-        freeze(qwen_transformer)
+        logger.info(f"需要量化 {len(all_blocks)} 个transformer blocks")
+        with torch.no_grad():  # 减少内存占用，加速量化过程
+            for idx, block in enumerate(tqdm(all_blocks, desc="量化transformer blocks")):
+                block.to(device, dtype=torch_dtype)
+                quantize(block, weights=qfloat8)
+                freeze(block)
+                block.to('cpu')
+                # 定期清理显存缓存，避免内存累积
+                if len(all_blocks) > 20 and (idx + 1) % 10 == 0:
+                    torch.cuda.empty_cache()
+        logger.info("量化transformer blocks完成，开始量化主模型...")
+        with torch.no_grad():
+            qwen_transformer.to(device, dtype=torch_dtype)
+            quantize(qwen_transformer, weights=qfloat8)
+            freeze(qwen_transformer)
+        torch.cuda.empty_cache()
+        logger.info("FP8量化完成")
         
     lora_config = LoraConfig(
         r=args.rank,
