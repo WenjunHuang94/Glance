@@ -1,6 +1,7 @@
 import torch
 from pipeline.qwen_multi_GPU import GlanceQwenSlowPipeline, GlanceQwenFastPipeline
 from utils.distribute_free import distribute, free_pipe
+import os
 
 # 配置 LoRA 权重路径
 # 如果本地有文件，请设置为你本地 LoRA 权重文件所在的目录路径
