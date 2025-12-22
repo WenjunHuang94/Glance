@@ -3,7 +3,7 @@ from pipeline.qwen import GlanceQwenSlowPipeline, GlanceQwenFastPipeline
 from utils.distribute_free import free_pipe
 
 repo = "CSU-JPG/Glance"
-slow_pipe = GlanceQwenSlowPipeline.from_pretrained("Qwen/Qwen-Image", torch_dtype=torch.float32)
+slow_pipe = GlanceQwenSlowPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.float32)
 slow_pipe.load_lora_weights(repo, weight_name="glance_qwen_slow.safetensors")
 slow_pipe.to("cuda")
 
@@ -20,7 +20,7 @@ latents = slow_pipe(
 ).images[0].unsqueeze(0).detach().cpu()
 free_pipe(slow_pipe)
 
-fast_pipe = GlanceQwenFastPipeline.from_pretrained("Qwen/Qwen-Image", torch_dtype=torch.float32)
+fast_pipe = GlanceQwenFastPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.float32)
 fast_pipe.load_lora_weights(repo, weight_name="glance_qwen_fast.safetensors")
 fast_pipe.to("cuda")
 
