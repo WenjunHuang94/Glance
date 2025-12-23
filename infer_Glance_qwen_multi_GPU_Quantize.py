@@ -28,7 +28,8 @@ else:
 if quantize_dit:
     print("开始对 slow_pipe 的 DIT 进行量化...")
     torch_dtype = torch.bfloat16
-    device = "cuda:0"
+    # 使用 GPU 1 进行量化，避免占用 GPU 0（GPU 0 预留给 text_encoder 和 vae）
+    device = "cuda:1"
     qwen_transformer = slow_pipe.transformer
     all_blocks = list(qwen_transformer.transformer_blocks)
     
@@ -37,10 +38,15 @@ if quantize_dit:
         quantize(block, weights=qfloat8)
         freeze(block)
         block.to('cpu')
+        # 清理显存缓存，避免累积
+        torch.cuda.empty_cache()
     
     qwen_transformer.to(device, dtype=torch_dtype)
     quantize(qwen_transformer, weights=qfloat8)
     freeze(qwen_transformer)
+    # 量化完成后将 transformer 移回 CPU，让 distribute() 可以正常分配
+    qwen_transformer.to('cpu')
+    torch.cuda.empty_cache()
     print("✓ slow_pipe DIT 量化完成")
 
 distribute(slow_pipe)
@@ -72,7 +78,8 @@ else:
 if quantize_dit:
     print("开始对 fast_pipe 的 DIT 进行量化...")
     torch_dtype = torch.bfloat16
-    device = "cuda:0"
+    # 使用 GPU 1 进行量化，避免占用 GPU 0（GPU 0 预留给 text_encoder 和 vae）
+    device = "cuda:1"
     qwen_transformer = fast_pipe.transformer
     all_blocks = list(qwen_transformer.transformer_blocks)
     
@@ -81,10 +88,15 @@ if quantize_dit:
         quantize(block, weights=qfloat8)
         freeze(block)
         block.to('cpu')
+        # 清理显存缓存，避免累积
+        torch.cuda.empty_cache()
     
     qwen_transformer.to(device, dtype=torch_dtype)
     quantize(qwen_transformer, weights=qfloat8)
     freeze(qwen_transformer)
+    # 量化完成后将 transformer 移回 CPU，让 distribute() 可以正常分配
+    qwen_transformer.to('cpu')
+    torch.cuda.empty_cache()
     print("✓ fast_pipe DIT 量化完成")
 
 distribute(fast_pipe)
