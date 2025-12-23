@@ -231,6 +231,8 @@ def main():
     qwen_transformer = QwenImageTransformer2DModel.from_pretrained(
         args.pretrained_model_name_or_path,
         subfolder="transformer",    )
+    import pdb
+    pdb.set_trace()
     if args.quantize:
         torch_dtype = weight_dtype
         device = accelerator.device
@@ -243,6 +245,8 @@ def main():
         qwen_transformer.to(device, dtype=torch_dtype)
         quantize(qwen_transformer, weights=qfloat8)
         freeze(qwen_transformer)
+    import pdb
+    pdb.set_trace()
         
     lora_config = LoraConfig(
         r=args.rank,

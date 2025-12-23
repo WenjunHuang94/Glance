@@ -76,6 +76,8 @@ class CustomImageDataset(Dataset):
 
     def __getitem__(self, idx):
         try:
+            import pdb
+            pdb.set_trace()
             idx = random.randint(0, len(self.images) - 1)
             if self.cached_image_embeddings is None and self.img_cache_dir is None:
                 img = Image.open(self.images[idx]).convert('RGB')
