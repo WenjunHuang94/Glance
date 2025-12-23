@@ -10,12 +10,12 @@ lora_weights_dir = "./"  # 例如: "/path/to/your/lora/weights" 或 "./" 或 Non
 
 # 如果指定了本地路径且文件存在，使用本地路径；否则使用 HF 仓库
 if lora_weights_dir and os.path.exists(os.path.join(lora_weights_dir, "glance_qwen_slow.safetensors")):
-    slow_pipe = GlanceQwenSlowPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.float32)
+    slow_pipe = GlanceQwenSlowPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.bfloat16)
     slow_pipe.load_lora_weights(lora_weights_dir, weight_name="glance_qwen_slow.safetensors")
     print(f"✓ Loading LoRA weights from local path: {lora_weights_dir}")
 else:
     repo = "CSU-JPG/Glance"
-    slow_pipe = GlanceQwenSlowPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.float32)
+    slow_pipe = GlanceQwenSlowPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.bfloat16)
     slow_pipe.load_lora_weights(repo, weight_name="glance_qwen_slow.safetensors")
     print(f"⚠ Loading LoRA weights from Hugging Face (will download): {repo}")
 slow_pipe.to("cuda")
@@ -34,12 +34,12 @@ latents = slow_pipe(
 free_pipe(slow_pipe)
 
 if lora_weights_dir and os.path.exists(os.path.join(lora_weights_dir, "glance_qwen_fast.safetensors")):
-    fast_pipe = GlanceQwenFastPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.float32)
+    fast_pipe = GlanceQwenFastPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.bfloat16)
     fast_pipe.load_lora_weights(lora_weights_dir, weight_name="glance_qwen_fast.safetensors")
     print(f"✓ Loading LoRA weights from local path: {lora_weights_dir}")
 else:
     repo = "CSU-JPG/Glance"
-    fast_pipe = GlanceQwenFastPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.float32)
+    fast_pipe = GlanceQwenFastPipeline.from_pretrained("/storage/v-jinpewang/az_workspace/wenjun/Qwen-Image2/my_hf_cache/Qwen-Image/", torch_dtype=torch.bfloat16)
     fast_pipe.load_lora_weights(repo, weight_name="glance_qwen_fast.safetensors")
     print(f"⚠ Loading LoRA weights from Hugging Face (will download): {repo}")
 fast_pipe.to("cuda")
@@ -52,7 +52,7 @@ image = fast_pipe(
     num_inference_steps=5, 
     true_cfg_scale=5,
     generator=torch.Generator(device="cuda").manual_seed(0), 
-    latents=latents.to("cuda", dtype=torch.float32)
+    latents=latents.to("cuda", dtype=torch.bfloat16)
 ).images[0]
 image.save("output.png")
 
