@@ -150,8 +150,6 @@ def main():
             os.makedirs(cache_dir, exist_ok=True)
     if args.precompute_text_embeddings:
         with torch.no_grad():
-            import pdb
-            pdb.set_trace()
             if args.save_cache_on_disk:
                 txt_cache_dir = os.path.join(cache_dir, "text_embs")
                 os.makedirs(txt_cache_dir, exist_ok=True)
