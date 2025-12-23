@@ -150,6 +150,8 @@ def main():
             os.makedirs(cache_dir, exist_ok=True)
     if args.precompute_text_embeddings:
         with torch.no_grad():
+            import pdb
+            pdb.set_trace()
             if args.save_cache_on_disk:
                 txt_cache_dir = os.path.join(cache_dir, "text_embs")
                 os.makedirs(txt_cache_dir, exist_ok=True)
@@ -231,8 +233,6 @@ def main():
     qwen_transformer = QwenImageTransformer2DModel.from_pretrained(
         args.pretrained_model_name_or_path,
         subfolder="transformer",    )
-    import pdb
-    pdb.set_trace()
     if args.quantize:
         torch_dtype = weight_dtype
         device = accelerator.device
@@ -245,8 +245,6 @@ def main():
         qwen_transformer.to(device, dtype=torch_dtype)
         quantize(qwen_transformer, weights=qfloat8)
         freeze(qwen_transformer)
-    import pdb
-    pdb.set_trace()
         
     lora_config = LoraConfig(
         r=args.rank,
