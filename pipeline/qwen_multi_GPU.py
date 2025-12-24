@@ -54,6 +54,7 @@ class GlanceQwenSlowPipeline(QwenImagePipeline):
         callback_on_step_end: Optional[Callable[[int, int, Dict], None]] = None,
         callback_on_step_end_tensor_inputs: List[str] = ["latents"],
         max_sequence_length: int = 512,
+        custom_timesteps: Optional[torch.Tensor] = None,
     ):
         # 1. Input validation and setup (No changes)
         height = height or self.default_sample_size * self.vae_scale_factor
@@ -116,10 +117,14 @@ class GlanceQwenSlowPipeline(QwenImagePipeline):
         timesteps, num_inference_steps = retrieve_timesteps(
             self.scheduler, num_inference_steps, device, sigmas=sigmas, mu=mu,
         )
-        timesteps = torch.tensor([
-           1000.0000, 979.1915, 957.5157, 934.9171, 911.3354
-           ], dtype=torch.bfloat16)
-        timesteps = timesteps.to(device)
+        # 如果提供了自定义 timesteps，使用它；否则使用默认的 slow timesteps
+        if custom_timesteps is not None:
+            timesteps = custom_timesteps.to(device)
+        else:
+            timesteps = torch.tensor([
+               1000.0000, 979.1915, 957.5157, 934.9171, 911.3354
+               ], dtype=torch.bfloat16)
+            timesteps = timesteps.to(device)
 
         num_inference_steps = 5
         num_warmup_steps = max(len(timesteps) - num_inference_steps * self.scheduler.order, 0)
@@ -304,6 +309,7 @@ class GlanceQwenFastPipeline(QwenImagePipeline):
         callback_on_step_end: Optional[Callable[[int, int, Dict], None]] = None,
         callback_on_step_end_tensor_inputs: List[str] = ["latents"],
         max_sequence_length: int = 512,
+        custom_timesteps: Optional[torch.Tensor] = None,
     ):
         # 1. Input validation and setup (No changes)
         height = height or self.default_sample_size * self.vae_scale_factor
@@ -358,10 +364,13 @@ class GlanceQwenFastPipeline(QwenImagePipeline):
         timesteps, num_inference_steps = retrieve_timesteps(
             self.scheduler, num_inference_steps, device, sigmas=sigmas, mu=mu,
         )
-
-        timesteps = torch.tensor([
-             886.7053, 745.0728, 562.9505, 320.0802, 20.0000], dtype=torch.bfloat16) 
-        timesteps = timesteps.to(device)
+        # 如果提供了自定义 timesteps，使用它；否则使用默认的 fast timesteps
+        if custom_timesteps is not None:
+            timesteps = custom_timesteps.to(device)
+        else:
+            timesteps = torch.tensor([
+                 886.7053, 745.0728, 562.9505, 320.0802, 20.0000], dtype=torch.bfloat16) 
+            timesteps = timesteps.to(device)
         num_warmup_steps = max(len(timesteps) - num_inference_steps * self.scheduler.order, 0)
         self._num_timesteps = len(timesteps)
         if self.transformer.config.guidance_embeds:
